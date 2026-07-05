@@ -1,0 +1,27 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "gericlass-os",
+  "main": "src/worker/index.ts",
+  "compatibility_date": "2026-06-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "dist/client",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "gericlass_os",
+      "database_id": "placeholder-criar-com-wrangler-d1-create",
+      "migrations_dir": "drizzle"
+    }
+  ],
+  "triggers": {
+    // 12:00 UTC seg = 09:00 America/Recife (lista de sumidos); 06:00 UTC dia 1 = recálculo mensal
+    "crons": ["0 12 * * 1", "0 6 1 * *"]
+  },
+  "observability": {
+    "enabled": true
+  }
+}

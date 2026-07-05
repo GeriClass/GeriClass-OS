@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.wrangler/
+.dev.vars
+scripts/import-notion/data/
+*.local
+.DS_Store
+tsconfig.tsbuildinfo
