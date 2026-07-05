@@ -49,7 +49,23 @@ test/          # vitest das regras de negócio
 
 - [x] Fase 0 — Scaffold, auth invite-only, equipe
 - [x] Fase 1 — Mentorados, Sessões, tracker de Bússolas, Planos 30/60
-- [ ] Fase 2 — Painel CS (verde/amarelo/vermelho), Encontros + presença, lista de sumidos (cron de segunda)
+- [x] Fase 2 — Painel CS (verde/amarelo/vermelho), Encontros + presença, lista de Sumidos, cron de snapshot
+- [x] Import do Notion — mentorados (🧑) e sessões (🧭) reais, com `notion_url` de volta para cada página
 - [ ] Fase 3 — Indicadores mensais dos mentorados (matriz mês × mentorado)
 - [ ] Fase 4 — Gestão & Metas (produtos, métricas mensais, metas com check-ins, reuniões e tarefas)
-- [ ] Fase 5 — Import das bases do Notion, portal do mentorado, integração Curseduca, notificações
+- [ ] Fase 5 — Import dos encontros (🎤) e presenças, portal do mentorado, integração Curseduca, notificações
+
+## Import do Notion
+
+Os scripts em `scripts/import-notion/` convertem exports das bases do Notion em SQL idempotente
+(`INSERT ... ON CONFLICT DO UPDATE`, IDs derivados da URL do Notion):
+
+```bash
+node scripts/import-notion/gerar-sql.mjs           # mentorados  → data/import.sql
+node scripts/import-notion/gerar-sql-sessoes.mjs   # sessões     → data/import-sessoes.sql
+wrangler d1 execute gericlass_os --local --file=scripts/import-notion/data/import.sql
+wrangler d1 execute gericlass_os --local --file=scripts/import-notion/data/import-sessoes.sql
+```
+
+Os dados crus ficam em `scripts/import-notion/data/` (**gitignored** — nunca commitar dados reais).
+Cada arquivo `.mjs` documenta o formato esperado. Para produção, rodar os mesmos `.sql` com `--remote`.

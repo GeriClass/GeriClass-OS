@@ -40,6 +40,7 @@ export const mentorados = sqliteTable("mentorados", {
   uf: text("uf"),
   subgrupo: text("subgrupo", { enum: ["semente", "broto", "arvore", "frutos"] }).notNull().default("semente"),
   status: text("status", { enum: ["ativo", "pausado", "encerrado"] }).notNull().default("ativo"),
+  turma: text("turma"),
   mentorRecrutadorId: text("mentor_recrutador_id").references(() => mentores.id),
   dataEntrada: text("data_entrada"),
   curseducaId: text("curseduca_id"),

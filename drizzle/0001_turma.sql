@@ -1,0 +1,1 @@
+ALTER TABLE `mentorados` ADD `turma` text;

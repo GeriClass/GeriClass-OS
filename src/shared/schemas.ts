@@ -31,6 +31,7 @@ export const mentoradoCreateSchema = z.object({
   uf: z.string().max(2).optional(),
   subgrupo: z.enum(SUBGRUPOS).default("semente"),
   status: z.enum(STATUS_MENTORADO).default("ativo"),
+  turma: z.string().optional(),
   mentorRecrutadorId: z.string().nullable().optional(),
   dataEntrada: z.string().optional(), // ISO date
   curseducaId: z.string().optional(),
@@ -71,6 +72,20 @@ export const tarefaPlanoUpdateSchema = z.object({
   descricao: z.string().min(1).optional(),
   status: z.enum(STATUS_TAREFA).optional(),
   dataLimite: z.string().nullable().optional(),
+});
+
+export const encontroCreateSchema = z.object({
+  titulo: z.string().min(1),
+  subgrupo: z.enum(SUBGRUPOS).nullable().optional(), // null = todos
+  dataHora: z.string().min(1),
+  mentorId: z.string().nullable().optional(),
+  tema: z.string().optional(),
+  linkGravacao: z.string().optional(),
+  notionUrl: z.string().optional(),
+});
+
+export const presencasSchema = z.object({
+  presencas: z.array(z.object({ mentoradoId: z.string().min(1), presente: z.boolean() })),
 });
 
 export const mentorCreateSchema = z.object({

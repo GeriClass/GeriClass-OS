@@ -5,6 +5,8 @@ import { mentoresRoutes } from "./routes/mentores";
 import { mentoradosRoutes } from "./routes/mentorados";
 import { sessoesRoutes } from "./routes/sessoes";
 import { tarefasPlanoRoutes } from "./routes/tarefas-plano";
+import { encontrosRoutes } from "./routes/encontros";
+import { healthscoresRoutes } from "./routes/healthscores";
 import { exigirLogin, type Env, type Variaveis } from "./auth/middleware";
 import { executarCron } from "./cron";
 
@@ -18,7 +20,9 @@ const api = app
   .route("/mentores", mentoresRoutes)
   .route("/mentorados", mentoradosRoutes)
   .route("/sessoes", sessoesRoutes)
-  .route("/tarefas-plano", tarefasPlanoRoutes);
+  .route("/tarefas-plano", tarefasPlanoRoutes)
+  .route("/encontros", encontrosRoutes)
+  .route("/healthscores", healthscoresRoutes);
 
 export type AppType = typeof api;
 

@@ -109,6 +109,7 @@ export const mentoradosRoutes = new Hono<{ Bindings: Env; Variables: Variaveis }
       uf: dados.uf ?? null,
       subgrupo: dados.subgrupo,
       status: dados.status,
+      turma: dados.turma ?? null,
       mentorRecrutadorId: dados.mentorRecrutadorId ?? null,
       dataEntrada: dados.dataEntrada ?? null,
       curseducaId: dados.curseducaId ?? null,

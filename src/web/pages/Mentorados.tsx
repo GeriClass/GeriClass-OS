@@ -74,6 +74,7 @@ export function Mentorados() {
               <tr className="border-b border-slate-200 text-left text-xs uppercase text-slate-400">
                 <th className="py-2">Nome</th>
                 <th>Subgrupo</th>
+                <th>Turma</th>
                 <th>Cidade</th>
                 <th>Entrada</th>
                 <th>Status</th>
@@ -88,6 +89,7 @@ export function Mentorados() {
                     </Link>
                   </td>
                   <td><SubgrupoBadge subgrupo={m.subgrupo} /></td>
+                  <td className="text-slate-500">{m.turma ?? "—"}</td>
                   <td className="text-slate-500">{m.cidade ? `${m.cidade}${m.uf ? "/" + m.uf : ""}` : "—"}</td>
                   <td className="text-slate-500">{m.dataEntrada ?? "—"}</td>
                   <td className="capitalize text-slate-500">{m.status}</td>

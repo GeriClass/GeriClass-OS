@@ -11,7 +11,8 @@ INSERT OR IGNORE INTO usuarios (id, nome, email, senha_hash, papel, cargo, ativo
 INSERT OR IGNORE INTO mentores (id, usuario_id, nome, email, ativo) VALUES
   ('mtr_daniel', 'usr_daniel', 'Daniel Gomes',      'daniel@gericlass.com.br', 1),
   ('mtr_rafael', 'usr_rafael', 'Rafael Duncan',     'rafael@gericlass.com.br', 1),
-  ('mtr_louise', 'usr_louise', 'Louise Montesanti', 'louise@gericlass.com.br', 1);
+  ('mtr_louise', 'usr_louise', 'Louise Montesanti', 'louise@gericlass.com.br', 1),
+  ('mtr_isabel', 'usr_isabel', 'Isabel Caminha',    'isabel@gericlass.com.br', 1);
 
 -- Mentorados de exemplo (dev): um com Bússola vencida, um vencendo, um realizado.
 INSERT OR IGNORE INTO mentorados (id, nome, email, subgrupo, status, mentor_recrutador_id, data_entrada, created_at) VALUES

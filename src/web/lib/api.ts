@@ -29,6 +29,7 @@ export interface Mentorado {
   uf: string | null;
   subgrupo: Subgrupo;
   status: StatusMentorado;
+  turma: string | null;
   mentorRecrutadorId: string | null;
   dataEntrada: string | null;
   curseducaId: string | null;
@@ -108,4 +109,6 @@ export const api = {
     requisicao<T>(caminho, { method: "POST", body: JSON.stringify(dados) }),
   patch: <T>(caminho: string, dados: unknown) =>
     requisicao<T>(caminho, { method: "PATCH", body: JSON.stringify(dados) }),
+  put: <T>(caminho: string, dados: unknown) =>
+    requisicao<T>(caminho, { method: "PUT", body: JSON.stringify(dados) }),
 };

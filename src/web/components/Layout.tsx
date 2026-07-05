@@ -9,10 +9,13 @@ interface Me {
 
 const LINKS = [
   { para: "/", rotulo: "Início", fim: true },
+  { para: "/painel-cs", rotulo: "Painel CS" },
   { para: "/mentorados", rotulo: "Mentorados" },
   { para: "/sessoes", rotulo: "Sessões" },
   { para: "/bussolas", rotulo: "Bússolas" },
   { para: "/planos", rotulo: "Planos 30/60" },
+  { para: "/encontros", rotulo: "Encontros" },
+  { para: "/sumidos", rotulo: "Sumidos" },
   { para: "/equipe", rotulo: "Equipe" },
 ];
 
