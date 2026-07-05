@@ -55,6 +55,14 @@ describe("montarPainel", () => {
     expect(linha.sumido).toBe(true);
   });
 
+  it("contato manual (anotação) tira o mentorado dos sumidos", () => {
+    const dados = base();
+    dados.contatos = [{ mentoradoId: "m1", data: "2026-07-01T10:00:00Z" }];
+    const [linha] = montarPainel(dados, HOJE);
+    expect(linha.sumido).toBe(false);
+    expect(linha.diasSemContato).toBe(4);
+  });
+
   it("tarefa vencida não concluída derruba o componente de tarefas", () => {
     const dados = base();
     dados.tarefas = [

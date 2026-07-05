@@ -104,6 +104,17 @@ export const encontrosPresencas = sqliteTable(
   (t) => [primaryKey({ columns: [t.encontroId, t.mentoradoId] })],
 );
 
+// Anotações do CS sobre o mentorado. tipo='contato' conta como interação
+// (tira o mentorado da lista de sumidos e alimenta o HealthScore).
+export const anotacoes = sqliteTable("anotacoes", {
+  id: text("id").primaryKey(),
+  mentoradoId: text("mentorado_id").notNull().references(() => mentorados.id, { onDelete: "cascade" }),
+  usuarioId: text("usuario_id").references(() => usuarios.id),
+  tipo: text("tipo", { enum: ["contato", "nota"] }).notNull().default("nota"),
+  texto: text("texto").notNull(),
+  data: text("data").notNull(),
+});
+
 // ─── Saúde do mentorado ──────────────────────────────────────────────────────
 
 export const healthscores = sqliteTable(

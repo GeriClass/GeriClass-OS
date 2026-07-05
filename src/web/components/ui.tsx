@@ -79,3 +79,21 @@ export function HealthBadge({ cor, score }: { cor: CorHealthScore; score?: numbe
 export function Vazio({ children }: { children: ReactNode }) {
   return <p className="py-8 text-center text-sm text-slate-400">{children}</p>;
 }
+
+/** Converte um telefone brasileiro em link wa.me (ou null se não reconhecível). */
+export function linkWhatsApp(numero: string | null): string | null {
+  if (!numero) return null;
+  const digitos = numero.replace(/\D/g, "");
+  if (digitos.length < 10) return null;
+  return `https://wa.me/${digitos.startsWith("55") && digitos.length >= 12 ? digitos : "55" + digitos}`;
+}
+
+export function WhatsAppLink({ numero }: { numero: string | null }) {
+  const link = linkWhatsApp(numero);
+  if (!link) return <span className="text-slate-400">—</span>;
+  return (
+    <a href={link} target="_blank" rel="noreferrer" className="text-emerald-600 hover:underline" title={numero ?? ""}>
+      WhatsApp ↗
+    </a>
+  );
+}

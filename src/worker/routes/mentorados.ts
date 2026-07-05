@@ -3,7 +3,7 @@ import { zValidator } from "@hono/zod-validator";
 import { and, desc, eq, inArray } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { criarDb, schema } from "../db";
-import { mentoradoCreateSchema, mentoradoUpdateSchema } from "../../shared/schemas";
+import { anotacaoCreateSchema, mentoradoCreateSchema, mentoradoUpdateSchema } from "../../shared/schemas";
 import { calcularSituacaoBussola } from "../services/bussola";
 import type { Env, Variaveis } from "../auth/middleware";
 
@@ -58,7 +58,7 @@ export const mentoradosRoutes = new Hono<{ Bindings: Env; Variables: Variaveis }
     )[0];
     if (!mentorado) return c.json({ erro: "Mentorado não encontrado" }, 404);
 
-    const [sessoesDoMentorado, tarefas, diagnostico, scores] = await Promise.all([
+    const [sessoesDoMentorado, tarefas, diagnostico, scores, anotacoesDoMentorado] = await Promise.all([
       db
         .select()
         .from(schema.sessoes)
@@ -79,6 +79,15 @@ export const mentoradosRoutes = new Hono<{ Bindings: Env; Variables: Variaveis }
         .from(schema.healthscores)
         .where(eq(schema.healthscores.mentoradoId, id))
         .orderBy(schema.healthscores.anoMes),
+      db
+        .select({
+          anotacao: schema.anotacoes,
+          usuarioNome: schema.usuarios.nome,
+        })
+        .from(schema.anotacoes)
+        .leftJoin(schema.usuarios, eq(schema.anotacoes.usuarioId, schema.usuarios.id))
+        .where(eq(schema.anotacoes.mentoradoId, id))
+        .orderBy(desc(schema.anotacoes.data)),
     ]);
 
     return c.json({
@@ -87,6 +96,7 @@ export const mentoradosRoutes = new Hono<{ Bindings: Env; Variables: Variaveis }
       tarefas,
       diagnostico: diagnostico[0] ?? null,
       healthscores: scores,
+      anotacoes: anotacoesDoMentorado,
       bussola: calcularSituacaoBussola(
         mentorado.dataEntrada,
         sessoesDoMentorado.find((s) => s.tipo === "bussola" && s.status === "realizada") ??
@@ -127,4 +137,19 @@ export const mentoradosRoutes = new Hono<{ Bindings: Env; Variables: Variaveis }
       .set({ ...dados, email: dados.email === "" ? null : dados.email })
       .where(eq(schema.mentorados.id, c.req.param("id")));
     return c.json({ ok: true });
+  })
+  // Registra anotação/contato do CS. tipo='contato' tira o mentorado dos sumidos.
+  .post("/:id/anotacoes", zValidator("json", anotacaoCreateSchema), async (c) => {
+    const dados = c.req.valid("json");
+    const db = criarDb(c.env.DB);
+    const id = nanoid();
+    await db.insert(schema.anotacoes).values({
+      id,
+      mentoradoId: c.req.param("id"),
+      usuarioId: c.var.usuario.id,
+      tipo: dados.tipo,
+      texto: dados.texto,
+      data: new Date().toISOString(),
+    });
+    return c.json({ id }, 201);
   });

@@ -6,7 +6,7 @@ import { montarPainel, type LinhaPainel } from "../services/painel";
 import type { Env, Variaveis } from "../auth/middleware";
 
 async function calcularPainel(db: Db, hoje: Date) {
-  const [mentorados, encontros, presencas, sessoesRealizadas, tarefas, indicadores] = await Promise.all([
+  const [mentorados, encontros, presencas, sessoesRealizadas, tarefas, indicadores, contatos] = await Promise.all([
     db.select().from(schema.mentorados).where(eq(schema.mentorados.status, "ativo")),
     db.select().from(schema.encontros),
     db.select().from(schema.encontrosPresencas),
@@ -25,13 +25,17 @@ async function calcularPainel(db: Db, hoje: Date) {
     db
       .select({ mentoradoId: schema.indicadoresMensais.mentoradoId, anoMes: schema.indicadoresMensais.anoMes })
       .from(schema.indicadoresMensais),
+    db
+      .select({ mentoradoId: schema.anotacoes.mentoradoId, data: schema.anotacoes.data })
+      .from(schema.anotacoes)
+      .where(eq(schema.anotacoes.tipo, "contato")),
   ]);
 
   const anoMes = hoje.toISOString().slice(0, 7);
   const indicadoresDoMes = new Set(indicadores.filter((i) => i.anoMes === anoMes).map((i) => i.mentoradoId));
 
   const linhas = montarPainel(
-    { mentorados, encontros, presencas, sessoesRealizadas, tarefas, indicadoresDoMes },
+    { mentorados, encontros, presencas, sessoesRealizadas, tarefas, indicadoresDoMes, contatos },
     hoje,
   );
   return { mentorados, linhas };

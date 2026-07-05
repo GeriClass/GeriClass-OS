@@ -2,13 +2,21 @@ import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { api, type Mentor, type Mentorado } from "../lib/api";
-import { Botao, Campo, Card, inputCls, SubgrupoBadge, TituloPagina, Vazio } from "../components/ui";
+import { Botao, Campo, Card, inputCls, SubgrupoBadge, TituloPagina, Vazio, WhatsAppLink } from "../components/ui";
 import { SUBGRUPOS, SUBGRUPO_LABEL, type Subgrupo } from "@shared/constantes";
+
+/** Normaliza para busca sem acentos e sem caixa. */
+function normalizar(s: string): string {
+  return s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+}
 
 export function Mentorados() {
   const queryClient = useQueryClient();
+  const [busca, setBusca] = useState("");
   const [filtroSubgrupo, setFiltroSubgrupo] = useState<Subgrupo | "">("");
   const [filtroStatus, setFiltroStatus] = useState("ativo");
+  const [filtroTurma, setFiltroTurma] = useState("");
+  const [filtroMentor, setFiltroMentor] = useState("");
   const [criando, setCriando] = useState(false);
 
   const { data } = useQuery({
@@ -29,9 +37,17 @@ export function Mentorados() {
     },
   });
 
+  const termo = normalizar(busca.trim());
   const lista = (data?.mentorados ?? []).filter(
-    (m) => (!filtroSubgrupo || m.subgrupo === filtroSubgrupo) && (!filtroStatus || m.status === filtroStatus),
+    (m) =>
+      (!filtroSubgrupo || m.subgrupo === filtroSubgrupo) &&
+      (!filtroStatus || m.status === filtroStatus) &&
+      (!filtroTurma || m.turma === filtroTurma) &&
+      (!filtroMentor || m.mentorRecrutadorId === filtroMentor) &&
+      (!termo ||
+        normalizar(`${m.nome} ${m.email ?? ""} ${m.cidade ?? ""} ${m.whatsapp ?? ""}`).includes(termo)),
   );
+  const turmas = [...new Set((data?.mentorados ?? []).map((m) => m.turma).filter(Boolean))].sort() as string[];
 
   return (
     <div>
@@ -50,7 +66,14 @@ export function Mentorados() {
         </Card>
       )}
 
-      <div className="mb-3 flex gap-2">
+      <div className="mb-3 flex flex-wrap gap-2">
+        <input
+          type="search"
+          placeholder="🔍 Buscar por nome, email, cidade, telefone…"
+          value={busca}
+          onChange={(e) => setBusca(e.target.value)}
+          className={inputCls + " max-w-80"}
+        />
         <select value={filtroSubgrupo} onChange={(e) => setFiltroSubgrupo(e.target.value as Subgrupo | "")} className={inputCls + " max-w-40"}>
           <option value="">Todos os subgrupos</option>
           {SUBGRUPOS.map((s) => (
@@ -62,6 +85,18 @@ export function Mentorados() {
           <option value="ativo">Ativos</option>
           <option value="pausado">Pausados</option>
           <option value="encerrado">Encerrados</option>
+        </select>
+        <select value={filtroTurma} onChange={(e) => setFiltroTurma(e.target.value)} className={inputCls + " max-w-32"}>
+          <option value="">Turma</option>
+          {turmas.map((t) => (
+            <option key={t} value={t}>{t}</option>
+          ))}
+        </select>
+        <select value={filtroMentor} onChange={(e) => setFiltroMentor(e.target.value)} className={inputCls + " max-w-44"}>
+          <option value="">Mentor que captou</option>
+          {(mentoresData?.mentores ?? []).map((m) => (
+            <option key={m.id} value={m.id}>{m.nome}</option>
+          ))}
         </select>
       </div>
 
@@ -77,6 +112,7 @@ export function Mentorados() {
                 <th>Turma</th>
                 <th>Cidade</th>
                 <th>Entrada</th>
+                <th>Contato</th>
                 <th>Status</th>
               </tr>
             </thead>
@@ -92,6 +128,7 @@ export function Mentorados() {
                   <td className="text-slate-500">{m.turma ?? "—"}</td>
                   <td className="text-slate-500">{m.cidade ? `${m.cidade}${m.uf ? "/" + m.uf : ""}` : "—"}</td>
                   <td className="text-slate-500">{m.dataEntrada ?? "—"}</td>
+                  <td><WhatsAppLink numero={m.whatsapp} /></td>
                   <td className="capitalize text-slate-500">{m.status}</td>
                 </tr>
               ))}

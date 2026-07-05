@@ -17,6 +17,8 @@ export interface DadosPainel {
   tarefas: { mentoradoId: string; dataLimite: string | null; status: string; concluidaEm: string | null }[];
   /** IDs de mentorados com indicadores lançados no mês corrente. */
   indicadoresDoMes: Set<string>;
+  /** Contatos manuais registrados pelo CS (anotações tipo 'contato'). */
+  contatos?: { mentoradoId: string; data: string }[];
 }
 
 export interface LinhaPainel {
@@ -64,7 +66,13 @@ export function montarPainel(dados: DadosPainel, hoje: Date): LinhaPainel[] {
     const datasEncontrosComPresenca = dados.encontros
       .filter((e) => presencasDele.some((p) => p.encontroId === e.id))
       .map((e) => e.dataHora);
-    const contatos = [...datasEncontrosComPresenca, ...(ultimaSessao ? [ultimaSessao] : []), ...(ultimaConclusao ? [ultimaConclusao as string] : [])];
+    const contatosManuais = (dados.contatos ?? []).filter((c) => c.mentoradoId === m.id).map((c) => c.data);
+    const contatos = [
+      ...datasEncontrosComPresenca,
+      ...(ultimaSessao ? [ultimaSessao] : []),
+      ...(ultimaConclusao ? [ultimaConclusao as string] : []),
+      ...contatosManuais,
+    ];
     const semDados = contatos.length === 0 && tarefasDele.length === 0;
     // Entrada recente conta como contato para não marcar recém-chegado como sumido.
     if (m.dataEntrada) contatos.push(m.dataEntrada);

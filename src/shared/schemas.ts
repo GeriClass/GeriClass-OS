@@ -74,6 +74,11 @@ export const tarefaPlanoUpdateSchema = z.object({
   dataLimite: z.string().nullable().optional(),
 });
 
+export const anotacaoCreateSchema = z.object({
+  tipo: z.enum(["contato", "nota"]).default("nota"),
+  texto: z.string().min(1),
+});
+
 export const encontroCreateSchema = z.object({
   titulo: z.string().min(1),
   subgrupo: z.enum(SUBGRUPOS).nullable().optional(), // null = todos
