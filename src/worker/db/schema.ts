@@ -153,6 +153,64 @@ export const indicadoresMensais = sqliteTable(
   (t) => [uniqueIndex("indicadores_mentorado_mes").on(t.mentoradoId, t.anoMes)],
 );
 
+// ─── GeriUpdates (app do assinante) ──────────────────────────────────────────
+
+export const guAssinantes = sqliteTable("gu_assinantes", {
+  id: text("id").primaryKey(),
+  nome: text("nome").notNull(),
+  email: text("email").notNull().unique(),
+  senhaHash: text("senha_hash").notNull(),
+  whatsapp: text("whatsapp"),
+  status: text("status", { enum: ["ativo", "pausado", "cancelado"] }).notNull().default("ativo"),
+  curseducaId: text("curseduca_id"),
+  ultimoAcessoEm: text("ultimo_acesso_em"),
+  createdAt: text("created_at").notNull(),
+});
+
+export const guAssinanteSessoes = sqliteTable("gu_assinante_sessoes", {
+  id: text("id").primaryKey(),
+  assinanteId: text("assinante_id").notNull().references(() => guAssinantes.id, { onDelete: "cascade" }),
+  expiresAt: text("expires_at").notNull(),
+});
+
+// Conteúdo diário do GeriUpdates. Status é derivado de publicado_em
+// (NULL = rascunho, futuro = agendado, passado = publicado) — nunca gravado.
+export const guConteudos = sqliteTable("gu_conteudos", {
+  id: text("id").primaryKey(),
+  titulo: text("titulo").notNull(),
+  resumo: text("resumo"),
+  corpo: text("corpo").notNull(), // markdown
+  tipo: text("tipo", { enum: ["artigo", "video", "audio", "material"] }).notNull().default("artigo"),
+  tema: text("tema"),
+  linkReferencia: text("link_referencia"),
+  linkVideo: text("link_video"),
+  linkAudio: text("link_audio"),
+  publicadoEm: text("publicado_em"),
+  autorUsuarioId: text("autor_usuario_id").references(() => usuarios.id),
+  createdAt: text("created_at").notNull(),
+  updatedAt: text("updated_at").notNull(),
+});
+
+export const guLeituras = sqliteTable(
+  "gu_leituras",
+  {
+    conteudoId: text("conteudo_id").notNull().references(() => guConteudos.id, { onDelete: "cascade" }),
+    assinanteId: text("assinante_id").notNull().references(() => guAssinantes.id, { onDelete: "cascade" }),
+    lidoEm: text("lido_em").notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.conteudoId, t.assinanteId] })],
+);
+
+export const guSalvos = sqliteTable(
+  "gu_salvos",
+  {
+    conteudoId: text("conteudo_id").notNull().references(() => guConteudos.id, { onDelete: "cascade" }),
+    assinanteId: text("assinante_id").notNull().references(() => guAssinantes.id, { onDelete: "cascade" }),
+    salvoEm: text("salvo_em").notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.conteudoId, t.assinanteId] })],
+);
+
 // ─── Gestão da empresa ───────────────────────────────────────────────────────
 
 export const produtos = sqliteTable("produtos", {

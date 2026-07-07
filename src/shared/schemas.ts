@@ -1,5 +1,14 @@
 import { z } from "zod";
-import { PAPEIS, STATUS_MENTORADO, STATUS_SESSAO, STATUS_TAREFA, SUBGRUPOS, TIPOS_SESSAO } from "./constantes";
+import {
+  PAPEIS,
+  STATUS_ASSINANTE,
+  STATUS_MENTORADO,
+  STATUS_SESSAO,
+  STATUS_TAREFA,
+  SUBGRUPOS,
+  TIPOS_CONTEUDO_GU,
+  TIPOS_SESSAO,
+} from "./constantes";
 
 export const loginSchema = z.object({
   email: z.string().email(),
@@ -92,6 +101,53 @@ export const encontroCreateSchema = z.object({
 export const presencasSchema = z.object({
   presencas: z.array(z.object({ mentoradoId: z.string().min(1), presente: z.boolean() })),
 });
+
+// ─── GeriUpdates ─────────────────────────────────────────────────────────────
+
+export const guConteudoCreateSchema = z.object({
+  titulo: z.string().min(1),
+  resumo: z.string().optional(),
+  corpo: z.string().min(1),
+  tipo: z.enum(TIPOS_CONTEUDO_GU).default("artigo"),
+  tema: z.string().optional(),
+  linkReferencia: z.string().optional(),
+  linkVideo: z.string().optional(),
+  linkAudio: z.string().optional(),
+  /** ISO datetime; omitir = rascunho, futuro = agendado. */
+  publicadoEm: z.string().nullable().optional(),
+});
+
+export const guConteudoUpdateSchema = guConteudoCreateSchema.partial().extend({
+  resumo: z.string().nullable().optional(),
+  tema: z.string().nullable().optional(),
+  linkReferencia: z.string().nullable().optional(),
+  linkVideo: z.string().nullable().optional(),
+  linkAudio: z.string().nullable().optional(),
+});
+
+export const guAssinanteCreateSchema = z.object({
+  nome: z.string().min(1),
+  email: z.string().email(),
+  senha: z.string().min(8),
+  whatsapp: z.string().optional(),
+  status: z.enum(STATUS_ASSINANTE).default("ativo"),
+  curseducaId: z.string().optional(),
+});
+
+export const guAssinanteUpdateSchema = z.object({
+  nome: z.string().min(1).optional(),
+  whatsapp: z.string().nullable().optional(),
+  status: z.enum(STATUS_ASSINANTE).optional(),
+  curseducaId: z.string().nullable().optional(),
+  senha: z.string().min(8).optional(),
+});
+
+export const guAlterarSenhaSchema = z.object({
+  senhaAtual: z.string().min(1),
+  novaSenha: z.string().min(8),
+});
+
+export const guMarcarSchema = z.object({ valor: z.boolean() });
 
 export const mentorCreateSchema = z.object({
   nome: z.string().min(1),

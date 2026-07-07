@@ -12,3 +12,38 @@
 body {
   @apply bg-slate-50 text-slate-900 antialiased;
 }
+
+/* Corpo dos conteúdos do GeriUpdates (markdown renderizado) */
+.prose-gu h1,
+.prose-gu h2,
+.prose-gu h3 {
+  @apply mt-4 font-semibold text-slate-900;
+}
+.prose-gu h1 {
+  @apply text-lg;
+}
+.prose-gu h2 {
+  @apply text-base;
+}
+.prose-gu ul,
+.prose-gu ol {
+  @apply ml-5 space-y-1;
+}
+.prose-gu ul {
+  @apply list-disc;
+}
+.prose-gu ol {
+  @apply list-decimal;
+}
+.prose-gu a {
+  @apply text-gc-600 underline;
+}
+.prose-gu blockquote {
+  @apply border-l-4 border-gc-100 pl-3 text-slate-600 italic;
+}
+.prose-gu strong {
+  @apply font-semibold text-slate-900;
+}
+.prose-gu code {
+  @apply rounded bg-slate-100 px-1 py-0.5 text-[13px];
+}

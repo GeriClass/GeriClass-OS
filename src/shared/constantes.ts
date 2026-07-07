@@ -38,6 +38,24 @@ export const HEALTHSCORE_AMARELO_MIN = 40;
 
 export type CorHealthScore = "verde" | "amarelo" | "vermelho";
 
+// ─── GeriUpdates ─────────────────────────────────────────────────────────────
+
+export const TIPOS_CONTEUDO_GU = ["artigo", "video", "audio", "material"] as const;
+export type TipoConteudoGu = (typeof TIPOS_CONTEUDO_GU)[number];
+
+export const TIPO_CONTEUDO_GU_LABEL: Record<TipoConteudoGu, string> = {
+  artigo: "Artigo comentado",
+  video: "Vídeo",
+  audio: "Áudio",
+  material: "Material",
+};
+
+export const STATUS_ASSINANTE = ["ativo", "pausado", "cancelado"] as const;
+export type StatusAssinante = (typeof STATUS_ASSINANTE)[number];
+
+/** Status do conteúdo é derivado de publicadoEm — nunca gravado. */
+export type StatusConteudoGu = "rascunho" | "agendado" | "publicado";
+
 export function corDoScore(score: number): CorHealthScore {
   if (score >= HEALTHSCORE_VERDE_MIN) return "verde";
   if (score >= HEALTHSCORE_AMARELO_MIN) return "amarelo";

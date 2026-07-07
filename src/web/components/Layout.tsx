@@ -16,6 +16,7 @@ const LINKS = [
   { para: "/planos", rotulo: "Planos 30/60" },
   { para: "/encontros", rotulo: "Encontros" },
   { para: "/sumidos", rotulo: "Sumidos" },
+  { para: "/geriupdates", rotulo: "GeriUpdates" },
   { para: "/equipe", rotulo: "Equipe" },
 ];
 
